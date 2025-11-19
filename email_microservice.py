@@ -20,6 +20,8 @@ class ReminderEmail(BaseModel):
     date_year: int
     date_month: int
     date_day: int
+    date_hour: int
+    date_min: int
     task_title: str
     task_description: str
     task_due_date: str
