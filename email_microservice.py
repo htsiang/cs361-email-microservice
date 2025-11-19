@@ -58,9 +58,9 @@ async def send_task_reminder_email(email: ReminderEmail):
     subject = "Reminder: " + email.task_title
 
     # format is (year, month, day, hour, minute, second)
-    send_time = dt.datetime(email.date_year, email.date_month, email.date_day, 16, 19, 0)
+    send_time = dt.datetime(email.date_year, email.date_month, email.date_day, email.date_hour, email.date_min, 0)
     print(send_time.timestamp()-time.time())
-    # time.sleep(send_time.timestamp()-time.time())
+    time.sleep(send_time.timestamp()-time.time())
 
     try:
         await send_email(email.destination_email, subject, content)
