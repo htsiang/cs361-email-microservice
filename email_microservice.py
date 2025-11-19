@@ -28,7 +28,6 @@ class ReminderEmail(BaseModel):
 
 app = FastAPI()
 
-@staticmethod
 async def send_email(destination_email, subject, content):
     sender = "drinktea09@gmail.com"
 
@@ -47,10 +46,6 @@ async def send_email(destination_email, subject, content):
         mailserver.sendmail(sender, destination_email, msg.as_string())
     finally:
         mailserver.quit()
-
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
 
 @app.post("/email/task_reminder", status_code=201)
 async def send_task_reminder_email(email: ReminderEmail):

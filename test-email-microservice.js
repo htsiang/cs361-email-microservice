@@ -4,7 +4,7 @@ const body = {
     "date_month": 11,
     "date_day": 18,
     "date_hour": 17,
-    "date_min": 45,
+    "date_min":57,
     "task_title": "testing this reminder",
     "task_description": "description test",
     "task_due_date": "2025-11-18"
