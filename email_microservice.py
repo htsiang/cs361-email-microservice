@@ -4,12 +4,16 @@ import datetime as dt
 import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
+import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-# load_dotenv()
-# EMAIL_USERNAME = os.getenv('EMAIL_USERNAME')
+load_dotenv()
+USERNAME = os.getenv('EMAIL_USERNAME')
+PASSWORD = os.getenv('EMAIL_PASSWORD')
+SUCCESS = {"message":"email notification successful"}
+FAILED = {"message": "failed to send email notification"}
 
 class ReminderEmail(BaseModel):
     destination_email: str
@@ -22,45 +26,42 @@ class ReminderEmail(BaseModel):
 
 app = FastAPI()
 
+@staticmethod
+async def send_email(destination_email, subject, content):
+    sender = "drinktea09@gmail.com"
+
+    msg = MIMEMultipart()
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['To'] = destination_email
+    msg.attach(MIMEText(content))
+
+    mailserver = smtplib.SMTP('smtp.gmail.com', 587)
+    mailserver.ehlo()
+    mailserver.starttls()
+    mailserver.login(USERNAME, PASSWORD)
+
+    try:
+        mailserver.sendmail(sender, destination_email, msg.as_string())
+    finally:
+        mailserver.quit()
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
 
-@app.post("/email")
-async def send_email(email: ReminderEmail):
-    sender = "drinktea09@gmail.com"
-    # destination = "htsiang1@gmail.com"
-    destination = email.destination_email
-
-    USERNAME = "drinktea09@gmail.com"
-    PASSWORD = "kglmekepakebbtrj"
-
-    # content = "TEST"
+@app.post("/email/task_reminder", status_code=201)
+async def send_task_reminder_email(email: ReminderEmail):
     content = "Task: " + email.task_title + "\nDue: " + email.task_due_date + "\nDescription: " + email.task_description
-
-    # subject = "TEST"
     subject = "Reminder: " + email.task_title
 
     # format is (year, month, day, hour, minute, second)
-    send_time = dt.datetime(email.date_year, email.date_month, email.date_day, 4, 58, 0)
+    send_time = dt.datetime(email.date_year, email.date_month, email.date_day, 16, 19, 0)
     print(send_time.timestamp()-time.time())
-    time.sleep(send_time.timestamp()-time.time())
+    # time.sleep(send_time.timestamp()-time.time())
 
     try:
-        msg = MIMEMultipart()
-        msg['Subject'] = subject
-        msg['From'] = sender
-        msg['To'] = destination
-        msg.attach(MIMEText(content))
-
-        mailserver = smtplib.SMTP('smtp.gmail.com', 587)
-        mailserver.ehlo()
-        mailserver.starttls()
-        mailserver.login(USERNAME, PASSWORD)
-
-        try:
-            mailserver.sendmail(sender, destination, msg.as_string())
-        finally:
-            mailserver.quit()
+        await send_email(email.destination_email, subject, content)
+        return SUCCESS
     except:
         sys.exit("mail failed")
