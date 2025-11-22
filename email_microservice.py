@@ -1,7 +1,7 @@
 import sys
 import smtplib
 import datetime as dt
-import time
+import asyncio
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
@@ -54,8 +54,11 @@ async def send_task_reminder_email(email: ReminderEmail):
 
     # format is (year, month, day, hour, minute, second)
     send_time = dt.datetime(email.date_year, email.date_month, email.date_day, email.date_hour, email.date_min, 0)
-    print(send_time.timestamp()-time.time())
-    time.sleep(send_time.timestamp()-time.time())
+    delay = send_time.timestamp() - dt.datetime.now().timestamp()
+    print(delay)
+    # Using asyncio for FastAPI convention for non-blocking
+    if delay > 0:
+        await asyncio.sleep(delay)
 
     try:
         await send_email(email.destination_email, subject, content)
