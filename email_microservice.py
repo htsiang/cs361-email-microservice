@@ -28,19 +28,27 @@ class ReminderEmail(BaseModel):
 
 app = FastAPI()
 
-async def send_email(destination_email, subject, content):
-    sender = "drinktea09@gmail.com"
-
+# Two Functions here to split functions jobs
+def build_message(sender, destination_email, subject, content):
     msg = MIMEMultipart()
     msg['Subject'] = subject
     msg['From'] = sender
     msg['To'] = destination_email
     msg.attach(MIMEText(content))
+    return msg
 
+def connect_smtp():
     mailserver = smtplib.SMTP('smtp.gmail.com', 587)
     mailserver.ehlo()
     mailserver.starttls()
     mailserver.login(USERNAME, PASSWORD)
+    return mailserver
+
+async def send_email(destination_email, subject, content):
+    sender = "drinktea09@gmail.com"
+
+    msg = build_message(sender, destination_email, subject, content)
+    mailserver = connect_smtp()
 
     try:
         mailserver.sendmail(sender, destination_email, msg.as_string())
