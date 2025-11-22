@@ -8,6 +8,9 @@ pip install -r requirements.txt
 fastapi dev email_microservice.py<br>
 The service will run on http://127.0.0.1:8000/
 
+To start the program
+**USE THIS:** uvicorn email_microservice:app --reload
+
 # Communication Contract
 ## Function to Send Email for Task Reminder
 ### Endpoint POST/email/task_reminder
