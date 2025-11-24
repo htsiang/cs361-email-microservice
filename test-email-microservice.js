@@ -10,25 +10,19 @@ const body = {
     "task_due_date": "2025-11-18"
 }
 
-// try {
-// const response = await 
-fetch('http://127.0.0.1:8000/email/task_reminder', {
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    },
-    method: "POST",
-    body: JSON.stringify(body)
-}).then(res => {
-    return res.json();
-}).then(obj => {
-    console.log(obj);
-}).catch(err => {
-    console.log(err.message);
-});
+// Try catch block for safety
+try {
+    const reponse = await fetch('http://127.0.0.1:8000/email/task_reminder', {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }, 
+        method: "POST",
+        body: JSON.stringify(body)
+    });
+    const result = await reponse.json();
+    console.log(result);
+} catch (err) {
+    console.log(err.message)
+}
 
-    // const result = response.json()
-    // console.log(result)
-// } catch (err) {
-//     console.log(err.message);
-// };
